@@ -2,7 +2,15 @@ import React from 'react'
 
 function Navbar() {
   return (
-    <div>Navbar</div>
+    <>
+      <DesktopNavbar />
+    </>
+  )
+}
+
+function DesktopNavbar() {
+  return (
+    <div>DesktopNavbar</div>
   )
 }
 
