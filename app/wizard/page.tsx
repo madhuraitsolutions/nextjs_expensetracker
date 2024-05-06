@@ -1,6 +1,9 @@
+import Logo from '@/components/Logo';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { currentUser } from '@clerk/nextjs/server'
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react'
 
@@ -34,6 +37,13 @@ async function page() {
                 </CardHeader>
                 <CardContent></CardContent>
             </Card>
+            <Separator />
+            <Button className='w-full' asChild>
+                <Link href={"/"}>I&apos;m done! Take me to the dashboard</Link>
+            </Button>
+            <div className='mt-4'>
+                <Logo />
+            </div>
         </div>
     )
 }
