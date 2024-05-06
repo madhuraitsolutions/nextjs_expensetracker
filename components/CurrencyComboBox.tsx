@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/popover"
 import { Currencies, Currency } from "@/lib/currencies"
 import { useQuery } from "@tanstack/react-query"
+import SkeletonWrapper from "./SkeletonWrapper"
 
 export function CurrencyComboBox() {
   const [open, setOpen] = React.useState(false)
@@ -38,32 +39,36 @@ export function CurrencyComboBox() {
 
   if (isDesktop) {
     return (
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className="w-full justify-start">
-            {selectedCurrency ? <>{selectedCurrency.label}</> : <>Select Currency</>}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0" align="start">
-          <CurrencyList setOpen={setOpen} setselectedCurrency={setselectedCurrency} />
-        </PopoverContent>
-      </Popover>
+      <SkeletonWrapper isLoading={userSettings.isFetching}>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-full justify-start">
+              {selectedCurrency ? <>{selectedCurrency.label}</> : <>Select Currency</>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0" align="start">
+            <CurrencyList setOpen={setOpen} setselectedCurrency={setselectedCurrency} />
+          </PopoverContent>
+        </Popover>
+      </SkeletonWrapper>
     )
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
-        <Button variant="outline" className="w-full justify-start">
-          {selectedCurrency ? <>{selectedCurrency.label}</> : <>Select Currency</>}
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <div className="mt-4 border-t">
-          <CurrencyList setOpen={setOpen} setselectedCurrency={setselectedCurrency} />
-        </div>
-      </DrawerContent>
-    </Drawer>
+    <SkeletonWrapper isLoading={userSettings.isFetching}>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>
+          <Button variant="outline" className="w-full justify-start">
+            {selectedCurrency ? <>{selectedCurrency.label}</> : <>Select Currency</>}
+          </Button>
+        </DrawerTrigger>
+        <DrawerContent>
+          <div className="mt-4 border-t">
+            <CurrencyList setOpen={setOpen} setselectedCurrency={setselectedCurrency} />
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </SkeletonWrapper>
   )
 }
 
@@ -80,7 +85,7 @@ function CurrencyList({
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
-          {Currencies.map((currency : Currency) => (
+          {Currencies.map((currency: Currency) => (
             <CommandItem
               key={currency.value}
               value={currency.value}
