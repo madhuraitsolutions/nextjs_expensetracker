@@ -1,3 +1,4 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation';
@@ -24,6 +25,15 @@ async function page() {
                 </h3>
             </div>
             <Separator />
+            <Card className='w-full'>
+                <CardHeader>
+                    <CardTitle>Currency</CardTitle>
+                    <CardDescription>
+                        Set your preferred currency
+                    </CardDescription>
+                </CardHeader>
+                <CardContent></CardContent>
+            </Card>
         </div>
     )
 }
