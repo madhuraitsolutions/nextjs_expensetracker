@@ -1,3 +1,4 @@
+import { CurrencyComboBox } from '@/components/CurrencyComboBox';
 import Logo from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,7 +36,9 @@ async function page() {
                         Set your preferred currency
                     </CardDescription>
                 </CardHeader>
-                <CardContent></CardContent>
+                <CardContent>
+                    <CurrencyComboBox/>
+                </CardContent>
             </Card>
             <Separator />
             <Button className='w-full' asChild>
