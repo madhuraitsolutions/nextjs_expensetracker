@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateTransactionSchema, CreateTransactionSchemaType } from '@/schema/transaction';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import CategoryPicker from './CategoryPicker';
 
 interface Props {
     trigger: ReactNode;
@@ -86,7 +87,7 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                                     <FormItem>
                                         <FormLabel>Category</FormLabel>
                                         <FormControl>
-                                            <Input defaultValue={""} {...field} />
+                                            <CategoryPicker type={type} />
                                         </FormControl>
                                         <FormDescription>
                                             Select a category for this transaction
