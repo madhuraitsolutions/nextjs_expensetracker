@@ -6,6 +6,9 @@ import { TransactionType } from "@/lib/types";
 import { ReactNode } from "react";
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { cn } from '@/lib/utils';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CreateTransactionSchema, CreateTransactionSchemaType } from '@/schema/transaction';
 
 interface Props {
     trigger: ReactNode;
@@ -13,6 +16,16 @@ interface Props {
 }
 
 function CreateTransactionDialog({ trigger, type }: Props) {
+    // Initialization: a form instance is being created using the useForm hook, which takes a schema as an argument
+    const form = useForm<CreateTransactionSchemaType>({
+        // Resolver: The resolver property is set to zodResolver(CreateTransactionSchema). 
+        // This indicates that Zod is being used to validate the form data against the schema defined by CreateTransactionSchema.
+        resolver: zodResolver(CreateTransactionSchema),
+        defaultValues: {
+            type,
+            date: new Date(),
+        }
+    })
     return (
         <Dialog>
             <DialogTrigger asChild>{trigger}</DialogTrigger>
