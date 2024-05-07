@@ -63,6 +63,21 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                                 </FormItem>
                             )}
                         />
+                        <FormField
+                            control={form.control}
+                            name="amount"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Amount</FormLabel>
+                                    <FormControl>
+                                        <Input defaultValue={0} type="number" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Transaction Amount (Required)
+                                    </FormDescription>
+                                </FormItem>
+                            )}
+                        />
                     </form>
                 </Form>
             </DialogContent>
