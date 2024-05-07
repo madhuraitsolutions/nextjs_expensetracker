@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateTransactionSchema, CreateTransactionSchemaType } from '@/schema/transaction';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 interface Props {
     trigger: ReactNode;
@@ -44,6 +46,25 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                         transaction
                     </DialogTitle>
                 </DialogHeader>
+                <Form {...form}>
+                    <form className='space-y-4'>
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                        <Input defaultValue={""} {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Transaction Description (Optional)
+                                    </FormDescription>
+                                </FormItem>
+                            )}
+                        />
+                    </form>
+                </Form>
             </DialogContent>
         </Dialog>
     )
