@@ -93,7 +93,7 @@ function CreateCategoryDialog({ type }: Props) {
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form 
+                    <form
                         onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'
                     >
                         <FormField
@@ -163,12 +163,12 @@ function CreateCategoryDialog({ type }: Props) {
                             Cancel
                         </Button>
                     </DialogClose>
-                    <Button 
+                    <Button
                         onClick={form.handleSubmit(onSubmit)}
                         disabled={isPending}
                     >
                         {!isPending && "Create"}
-                        {isPending && 
+                        {isPending &&
                             <Loader2 className='animate-spin' />
                         }
                     </Button>
