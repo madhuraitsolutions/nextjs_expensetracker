@@ -8,6 +8,8 @@ import { Category } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react'
 import CreateCategoryDialog from './CreateCategoryDialog';
+import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Props {
   type: TransactionType
@@ -53,17 +55,24 @@ function CategoryPicker({ type }: Props) {
               </p>
             </CommandEmpty>
             <CommandGroup>
-              {categoriesQuery.data?.map((category: Category) => (
-                <CommandItem
-                  key={category.name}
-                  onSelect={() => {
-                    setValue(category.name);
-                    setOpen(false);
-                  }}
-                >
-                  <CategoryRow category={category} />
-                </CommandItem>
-              ))}
+              {categoriesQuery.data &&
+                categoriesQuery.data.map((category: Category) => (
+                  <CommandItem
+                    key={category.name}
+                    onSelect={() => {
+                      setValue(category.name);
+                      setOpen((prev) => !prev);
+                    }}
+                  >
+                    <CategoryRow category={category} />
+                    <Check 
+                      className={cn(
+                        'w-4 h-4 opacity-0',
+                        value === category.name && 'opacity-100'
+                      )}
+                    />
+                  </CommandItem>
+                ))}
             </CommandGroup>
           </CommandList>
         </Command>
