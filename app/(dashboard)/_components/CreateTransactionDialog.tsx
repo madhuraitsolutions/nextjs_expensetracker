@@ -9,9 +9,14 @@ import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateTransactionSchema, CreateTransactionSchemaType } from '@/schema/transaction';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import CategoryPicker from './CategoryPicker';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
 
 interface Props {
     trigger: ReactNode;
@@ -97,6 +102,49 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                                         <FormDescription>
                                             Select a category for this transaction
                                         </FormDescription>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="date"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Treansaction Date</FormLabel>
+                                        <FormControl>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <FormControl>
+                                                        <Button
+                                                            variant={"outline"}
+                                                            className={cn(
+                                                                "w-[200px] pl-3 text-left font-normal",
+                                                                !field.value && "text-muted-foreground"
+                                                            )}
+                                                        >
+                                                            {field.value ? (
+                                                                format(field.value, "PPP")
+                                                            ) : (
+                                                                <span>Pick a date</span>
+                                                            )}
+                                                            <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                                                        </Button>
+                                                    </FormControl>
+                                                </PopoverTrigger>
+                                                <PopoverContent className='w-auto p-0'>
+                                                    <Calendar
+                                                        mode='single'
+                                                        selected={field.value}
+                                                        onSelect={field.onChange}
+                                                        initialFocus       
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                        </FormControl>
+                                        <FormDescription>
+                                            Select a date for this transaction
+                                        </FormDescription>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
