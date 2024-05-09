@@ -6,9 +6,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { TransactionType } from '@/lib/types';
 import { Category } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react';
 import CreateCategoryDialog from './CreateCategoryDialog';
-import { Check } from 'lucide-react';
+import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -29,6 +29,11 @@ function CategoryPicker({ type }: Props) {
     (category: Category) => category.name === value
   );
 
+  const successCallback = useCallback((category: Category) => {
+    setValue(category.name);
+    setOpen((prev) => !prev);
+  }, [setValue, setOpen]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -41,12 +46,13 @@ function CategoryPicker({ type }: Props) {
           {selectedCategory ? (
             <CategoryRow category={selectedCategory} />
           ) : ("Select Category")}
+          <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
         </Button>
       </PopoverTrigger>
       <PopoverContent className='w-[200px] p-0'>
         <Command onSubmit={e => { e.preventDefault() }}>
           <CommandInput placeholder="Search category..." />
-          <CreateCategoryDialog type={type} />
+          <CreateCategoryDialog type={type} successCallback={successCallback} />
           <CommandList>
             <CommandEmpty>
               <p>Category Not Found</p>
@@ -65,7 +71,7 @@ function CategoryPicker({ type }: Props) {
                     }}
                   >
                     <CategoryRow category={category} />
-                    <Check 
+                    <Check
                       className={cn(
                         'w-4 h-4 opacity-0',
                         value === category.name && 'opacity-100'
