@@ -46,7 +46,12 @@ function CategoryPicker({ type }: Props) {
           <CommandInput placeholder="Search category..." />
           <CreateCategoryDialog type={type} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>
+              <p>Category Not Found</p>
+              <p className='text-xs text-muted-foreground'>
+                Tip: create a new category
+              </p>
+            </CommandEmpty>
             <CommandGroup>
               {categoriesQuery.data?.map((category: Category) => (
                 <CommandItem
