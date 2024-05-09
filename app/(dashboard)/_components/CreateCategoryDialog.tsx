@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { TransactionType } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { CreateTransactionSchema, CreateTransactionSchemaType } from '@/schema/transaction';
+import { CreateCategorySchema, CreateCategorySchemaType } from '@/schema/category';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusSquare } from 'lucide-react';
 import React, { useState } from 'react'
@@ -17,9 +17,9 @@ interface Props {
 function CreateCategoryDialog({ type }: Props) {
     const [open, setOpen] = useState(false);
 
-    const form = useForm<CreateTransactionSchemaType>({
-        resolver : zodResolver(CreateTransactionSchema),
-        defaultValues : {
+    const form = useForm<CreateCategorySchemaType>({
+        resolver: zodResolver(CreateCategorySchema),
+        defaultValues: {
             type,
         }
     });
