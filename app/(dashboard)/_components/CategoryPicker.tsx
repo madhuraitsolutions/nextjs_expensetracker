@@ -6,18 +6,24 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { TransactionType } from '@/lib/types';
 import { Category } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import CreateCategoryDialog from './CreateCategoryDialog';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Props {
-  type: TransactionType
+  type: TransactionType;
+  onChange: (value: string) => void;
 }
 
-function CategoryPicker({ type }: Props) {
+function CategoryPicker({ type, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
+
+  useEffect(() => {
+    if (!value) return;
+    onChange(value); // When the value changes, call the `onChange` callback
+  }, [onChange, value]);
 
   const categoriesQuery = useQuery({
     queryKey: ["categories", type],
