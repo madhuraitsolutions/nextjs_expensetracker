@@ -122,6 +122,7 @@ function CreateCategoryDialog({ type }: Props) {
                             Cancel
                         </Button>
                     </DialogClose>
+                    <Button>Save</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
