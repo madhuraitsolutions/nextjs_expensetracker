@@ -6,6 +6,7 @@ import { UserSettings } from '@prisma/client';
 import { differenceInDays, startOfMonth } from 'date-fns';
 import React, { useState } from 'react'
 import { toast } from 'sonner';
+import StatsCard from './StatsCard';
 
 interface Props {
     userSettings: UserSettings;
@@ -22,15 +23,15 @@ function Overview({ userSettings }: Props) {
             <div className='container flex flex-wrap items-end justify-between gap-2 py-6'>
                 <h2 className='text-3xl font-bold'>Overview</h2>
                 <div className='flex items-center gap-3'>
-                    <DateRangePicker 
+                    <DateRangePicker
                         initialDateFrom={dateRange.from}
                         initialDateTo={dateRange.to}
                         showCompare={false}
                         onUpdate={values => {
                             const { from, to } = values.range;
 
-                            if(!from || !to) return;
-                            if(differenceInDays(to, from) > MAX_DATE_RANGE_DAYS) {
+                            if (!from || !to) return;
+                            if (differenceInDays(to, from) > MAX_DATE_RANGE_DAYS) {
                                 toast.error("Max date range is " + MAX_DATE_RANGE_DAYS + " days");
                                 return;
                             }
@@ -39,6 +40,13 @@ function Overview({ userSettings }: Props) {
                         }}
                     />
                 </div>
+            </div>
+            <div className='container flex w-full flex-col gap-2'>
+                <StatsCard
+                    from={dateRange.from}
+                    to={dateRange.to}
+                    userSettings={userSettings}
+                />
             </div>
         </>
     )
