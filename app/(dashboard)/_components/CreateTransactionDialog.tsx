@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import { TransactionType } from "@/lib/types";
 import { ReactNode } from "react";
@@ -17,6 +17,10 @@ import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { CreateTransaction } from '../_actions/transaction';
+import { toast } from 'sonner';
+import { DateToUTCDate } from '@/lib/helpers';
 
 interface Props {
     trigger: ReactNode;
@@ -35,12 +39,56 @@ function CreateTransactionDialog({ trigger, type }: Props) {
         }
     })
 
+    const [open, setOpen] = useState(false);
+
     const handleCategoryChange = useCallback((value: string) => {
         form.setValue("category", value);
     }, [form]);
 
+    const queryClient = useQueryClient();
+
+    const { mutate, isPending } = useMutation({
+        mutationFn: CreateTransaction,
+        onSuccess: () => {
+            toast.success("Transaction created successfully", {
+                id: "create-transaction",
+            });
+
+            form.reset({
+                type,
+                description: "",
+                amount: 0,
+                date: new Date(),
+                category: undefined,
+            });
+
+            //After creating a transaction, invalidate the overview query to update the data in homepage
+            queryClient.invalidateQueries({
+                queryKey: ["overview"],
+            });
+
+            //To close the dialog box
+            setOpen((prev) => !prev);
+        },
+        onError: () => {
+            toast.error("something went wrong", {
+                id: "create-transaction",
+            });
+        },
+    });
+
+    const onSubmit = useCallback((values: CreateTransactionSchemaType) => {
+        toast.loading("Creating transaction...", {
+            id: "create-transaction",
+        });
+        mutate({
+            ...values,
+            date: DateToUTCDate(values.date),
+        });
+    }, [mutate]);
+
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{trigger}</DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -58,7 +106,7 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                    <form className='space-y-4'>
+                    <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
                         <FormField
                             control={form.control}
                             name="description"
@@ -94,7 +142,7 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                                 control={form.control}
                                 name="category"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className='flex flex-col'>
                                         <FormLabel>Category</FormLabel>
                                         <FormControl>
                                             <CategoryPicker type={type} onChange={handleCategoryChange} />
@@ -109,7 +157,7 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                                 control={form.control}
                                 name="date"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className='flex flex-col'>
                                         <FormLabel>Treansaction Date</FormLabel>
                                         <FormControl>
                                             <Popover>
