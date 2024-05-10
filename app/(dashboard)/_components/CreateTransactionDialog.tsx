@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import { TransactionType } from "@/lib/types";
 import { ReactNode } from "react";
 import { DialogTitle } from '@radix-ui/react-dialog';
@@ -15,7 +15,7 @@ import CategoryPicker from './CategoryPicker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 
 interface Props {
@@ -136,7 +136,7 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                                                         mode='single'
                                                         selected={field.value}
                                                         onSelect={field.onChange}
-                                                        initialFocus       
+                                                        initialFocus
                                                     />
                                                 </PopoverContent>
                                             </Popover>
@@ -151,6 +151,26 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                         </div>
                     </form>
                 </Form>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button
+                            type="button"
+                            variant={"secondary"}
+                            onClick={() => { form.reset(); }}
+                        >
+                            Cancel
+                        </Button>
+                    </DialogClose>
+                    <Button
+                        onClick={form.handleSubmit(onSubmit)}
+                        disabled={isPending}
+                    >
+                        {!isPending && "Create"}
+                        {isPending &&
+                            <Loader2 className='animate-spin' />
+                        }
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     )
