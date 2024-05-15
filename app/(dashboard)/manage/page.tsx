@@ -27,7 +27,7 @@ function page() {
                 </div>
             </div>
             {/* End Header */}
-            <div className='Container flex flex-col gap-4 p-4'>
+            <div className='container flex flex-col gap-4 p-4'>
                 <Card>
                     <CardHeader>
                         <CardTitle>Currency</CardTitle>
@@ -84,7 +84,7 @@ function CategoryList({ type }: { type: TransactionType }) {
                 </CardHeader>
                 <Separator />
                 {!dataAvailable ? (
-                    <div className="">
+                    <div className="flex h-40 w-full flex-col items-center justify-center">
                         <p>
                             No
                             <span className={cn(
