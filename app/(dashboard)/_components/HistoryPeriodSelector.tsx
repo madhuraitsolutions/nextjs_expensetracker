@@ -42,6 +42,7 @@ function HistoryPeriodSelector({ period, setPeriod, timeFrame, setTimeFrame }: P
             <div className='flex flex-wrap items-center gap-2'>
                 <SkeletonWrapper
                     isLoading={historyPeriods.isFetching}
+                    fullWidth={false}
                 >
                     <YearSelector
                         period={period}
