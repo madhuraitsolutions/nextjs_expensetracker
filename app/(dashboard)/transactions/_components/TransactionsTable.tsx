@@ -4,6 +4,7 @@ import { GetTransactionsHistoryResponseType } from '@/app/api/transactions-histo
 import SkeletonWrapper from '@/components/SkeletonWrapper';
 import { DataTableColumnHeader } from '@/components/datatable/ColumnHeader';
 import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDef, SortingState, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import React, { useState } from 'react'
@@ -28,6 +29,54 @@ export const columns: ColumnDef<TransactionsHistoryRow>[] = [
                 {row.original.categoryIcon}
                 <div className='capitalize'>{row.original.category}</div>
             </div>
+        ),
+    },
+    {
+        accessorKey: "description",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title='Description' />
+        ),
+        cell: ({ row }) => (
+            <div className='capitalize'>
+                {row.original.description}
+            </div>
+        ),
+    },
+    {
+        accessorKey: "date",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title='Date' />
+        ),
+        cell: ({ row }) => {
+            const date = new Date(row.original.date);
+            const formattedDate = date.toLocaleDateString("default", {
+                timeZone: "UTC",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+            });
+            return <div className='text-muted-foreground'>{formattedDate}</div>
+        },
+    },
+    {
+        accessorKey: "type",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title='Type' className='justify-center' />
+        ),
+        cell: ({ row }) => (
+            <div 
+                className={cn("capitalize rounded-lg text-center p-2", row.original.type === "income" ? "bg-emerald-400/10 text-emerald-500" : "bg-rose-400/10 text-rose-500")} >
+                {row.original.type}
+            </div>
+        ),
+    },
+    {
+        accessorKey: "amount",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title='Amount' className='justify-center'/>
+        ),
+        cell: ({ row }) => (
+            <p className='text-md rounded-lg bg-gray-400/10 p-2 text-center font-medium'>{row.original.formattedAmount}</p>
         ),
     },
 ]
