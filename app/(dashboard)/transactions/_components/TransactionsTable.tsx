@@ -3,11 +3,12 @@
 import { GetTransactionsHistoryResponseType } from '@/app/api/transactions-history/route';
 import SkeletonWrapper from '@/components/SkeletonWrapper';
 import { DataTableColumnHeader } from '@/components/datatable/ColumnHeader';
+import { DataTableFacetedFilter } from '@/components/datatable/FacedFilter';
 import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDef, SortingState, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 interface Props {
     from: Date;
@@ -64,7 +65,7 @@ export const columns: ColumnDef<TransactionsHistoryRow>[] = [
             <DataTableColumnHeader column={column} title='Type' className='justify-center' />
         ),
         cell: ({ row }) => (
-            <div 
+            <div
                 className={cn("capitalize rounded-lg text-center p-2", row.original.type === "income" ? "bg-emerald-400/10 text-emerald-500" : "bg-rose-400/10 text-rose-500")} >
                 {row.original.type}
             </div>
@@ -73,7 +74,7 @@ export const columns: ColumnDef<TransactionsHistoryRow>[] = [
     {
         accessorKey: "amount",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title='Amount' className='justify-center'/>
+            <DataTableColumnHeader column={column} title='Amount' className='justify-center' />
         ),
         cell: ({ row }) => (
             <p className='text-md rounded-lg bg-gray-400/10 p-2 text-center font-medium'>{row.original.formattedAmount}</p>
@@ -84,7 +85,6 @@ export const columns: ColumnDef<TransactionsHistoryRow>[] = [
 function TransactionsTable({ from, to }: Props) {
 
     const [sorting, setSorting] = useState<SortingState>([]);
-    
     const history = useQuery<GetTransactionsHistoryResponseType>({
         queryKey: ["transaction", "history", from, to],
         queryFn: () => fetch(`/api/transactions-history?from=${from}&to=${to}`).then((res) => res.json()),
@@ -101,10 +101,40 @@ function TransactionsTable({ from, to }: Props) {
         getSortedRowModel: getSortedRowModel(),
     });
 
+    const categoriesOptions = useMemo(() => {
+        const categoriesMap = new Map();
+        history.data?.forEach((transaction) => {
+            categoriesMap.set(transaction.category, {
+                value: transaction.category,
+                label: `${transaction.categoryIcon} ${transaction.category}`,
+            });
+        });
+        const uniqueCategories = new Set(categoriesMap.values());
+        return Array.from(uniqueCategories);
+    }, [history.data]);
+
     return (
         <div className='w-full'>
             <div className='flex flex-wrap items-end justify-between gap-2 py-4'>
-                Todo: filters
+                <div className="flex gap-2">
+                    {table.getColumn("category") && (
+                        <DataTableFacetedFilter
+                            title="Category"
+                            column={table.getColumn("category")}
+                            options={categoriesOptions}
+                        />
+                    )}
+                    {table.getColumn("type") && (
+                        <DataTableFacetedFilter
+                            title="Type"
+                            column={table.getColumn("type")}
+                            options={[
+                                { label: "Income", value: "income" },
+                                { label: "Expense", value: "expense" },
+                            ]}
+                        />
+                    )}
+                </div>
             </div>
             <SkeletonWrapper isLoading={history.isFetching}>
                 <div className="rounded-md border">
