@@ -3,6 +3,7 @@
 import { GetTransactionsHistoryResponseType } from '@/app/api/transactions-history/route';
 import SkeletonWrapper from '@/components/SkeletonWrapper';
 import { DataTableColumnHeader } from '@/components/datatable/ColumnHeader';
+import { DataTableViewOptions } from '@/components/datatable/ColumnToogle';
 import { DataTableFacetedFilter } from '@/components/datatable/FacedFilter';
 import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
@@ -141,6 +142,7 @@ function TransactionsTable({ from, to }: Props) {
                         />
                     )}
                 </div>
+                <DataTableViewOptions table={table} />
             </div>
             <SkeletonWrapper isLoading={history.isFetching}>
                 <div className="rounded-md border">
