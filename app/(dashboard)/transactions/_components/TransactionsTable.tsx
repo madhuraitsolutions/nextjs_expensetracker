@@ -2,6 +2,7 @@
 
 import { GetTransactionsHistoryResponseType } from '@/app/api/transactions-history/route';
 import SkeletonWrapper from '@/components/SkeletonWrapper';
+import { DataTableColumnHeader } from '@/components/datatable/ColumnHeader';
 import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from '@/components/ui/table';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
@@ -19,7 +20,9 @@ type TransactionsHistoryRow = GetTransactionsHistoryResponseType[0];
 export const columns: ColumnDef<TransactionsHistoryRow>[] = [
     {
         accessorKey: "category",
-        header: "Category",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title='Category' />
+        ),
         cell: ({ row }) => (
             <div className='flex gap-2 capitalize'>
                 {row.original.categoryIcon}
