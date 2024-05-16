@@ -7,7 +7,7 @@ import { DataTableFacetedFilter } from '@/components/datatable/FacedFilter';
 import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import { ColumnDef, SortingState, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import React, { useMemo, useState } from 'react'
 
 interface Props {
@@ -25,6 +25,7 @@ export const columns: ColumnDef<TransactionsHistoryRow>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title='Category' />
         ),
+        filterFn:(row, id, value) => value.includes(row.getValue(id)),
         cell: ({ row }) => (
             <div className='flex gap-2 capitalize'>
                 {row.original.categoryIcon}
@@ -64,6 +65,7 @@ export const columns: ColumnDef<TransactionsHistoryRow>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title='Type' className='justify-center' />
         ),
+        filterFn:(row, id, value) => value.includes(row.getValue(id)),
         cell: ({ row }) => (
             <div
                 className={cn("capitalize rounded-lg text-center p-2", row.original.type === "income" ? "bg-emerald-400/10 text-emerald-500" : "bg-rose-400/10 text-rose-500")} >
@@ -85,6 +87,7 @@ export const columns: ColumnDef<TransactionsHistoryRow>[] = [
 function TransactionsTable({ from, to }: Props) {
 
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const history = useQuery<GetTransactionsHistoryResponseType>({
         queryKey: ["transaction", "history", from, to],
         queryFn: () => fetch(`/api/transactions-history?from=${from}&to=${to}`).then((res) => res.json()),
@@ -96,9 +99,12 @@ function TransactionsTable({ from, to }: Props) {
         getCoreRowModel: getCoreRowModel(),
         state: {
             sorting,
+            columnFilters,
         },
         onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
         getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
     });
 
     const categoriesOptions = useMemo(() => {
