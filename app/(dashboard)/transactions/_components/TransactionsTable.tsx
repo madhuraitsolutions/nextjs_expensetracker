@@ -12,6 +12,8 @@ import { useQuery } from '@tanstack/react-query';
 import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import React, { useMemo, useState } from 'react'
 import { download, generateCsv, mkConfig } from 'export-to-csv'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MoreHorizontal, TrashIcon } from 'lucide-react';
 
 interface Props {
     from: Date;
@@ -85,6 +87,14 @@ const columns: ColumnDef<TransactionsHistoryRow>[] = [
             <p className='text-md rounded-lg bg-gray-400/10 p-2 text-center font-medium'>{row.original.formattedAmount}</p>
         ),
     },
+    {
+        id: "actions",
+        enableHiding: false,
+        header:"Action",
+        cell: ({ row }) => (
+            <RowActions transaction={row.original} />
+        ),
+    }
 ];
 
 const csvConfig = mkConfig({
@@ -157,14 +167,14 @@ function TransactionsTable({ from, to }: Props) {
                     )}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    <Button 
-                        variant={"outline"} 
+                    <Button
+                        variant={"outline"}
                         size={"sm"}
                         className='ml-auto h-8 lg:flex'
                         onClick={() => {
-                            const data = table.getFilteredRowModel().rows.map( row => ({
+                            const data = table.getFilteredRowModel().rows.map(row => ({
                                 category: row.original.category,
-                                categoryIcon : row.original.categoryIcon,
+                                categoryIcon: row.original.categoryIcon,
                                 description: row.original.description,
                                 type: row.original.type,
                                 amount: row.original.amount,
@@ -248,3 +258,31 @@ function TransactionsTable({ from, to }: Props) {
 }
 
 export default TransactionsTable
+
+function RowActions({ transaction }: { transaction: TransactionsHistoryRow }) {
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+    return (
+        <>            
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant={"ghost"} className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end'>
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                        className='flex items-center gap-2'
+                        onSelect={() => { setShowDeleteDialog(prev => !prev) }}
+                    >
+                        <TrashIcon className='h-4 w-4 text-muted-foreground' />
+                        Delete
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </>
+    )
+}
