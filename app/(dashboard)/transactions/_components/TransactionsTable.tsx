@@ -5,8 +5,8 @@ import SkeletonWrapper from '@/components/SkeletonWrapper';
 import { DataTableColumnHeader } from '@/components/datatable/ColumnHeader';
 import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from '@/components/ui/table';
 import { useQuery } from '@tanstack/react-query';
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import React from 'react'
+import { ColumnDef, SortingState, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import React, { useState } from 'react'
 
 interface Props {
     from: Date;
@@ -34,6 +34,8 @@ export const columns: ColumnDef<TransactionsHistoryRow>[] = [
 
 function TransactionsTable({ from, to }: Props) {
 
+    const [sorting, setSorting] = useState<SortingState>([]);
+    
     const history = useQuery<GetTransactionsHistoryResponseType>({
         queryKey: ["transaction", "history", from, to],
         queryFn: () => fetch(`/api/transactions-history?from=${from}&to=${to}`).then((res) => res.json()),
@@ -43,6 +45,11 @@ function TransactionsTable({ from, to }: Props) {
         data: history.data || emptyData,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        state: {
+            sorting,
+        },
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
     });
 
     return (
