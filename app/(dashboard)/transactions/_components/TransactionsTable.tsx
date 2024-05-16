@@ -5,10 +5,11 @@ import SkeletonWrapper from '@/components/SkeletonWrapper';
 import { DataTableColumnHeader } from '@/components/datatable/ColumnHeader';
 import { DataTableViewOptions } from '@/components/datatable/ColumnToogle';
 import { DataTableFacetedFilter } from '@/components/datatable/FacedFilter';
+import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import React, { useMemo, useState } from 'react'
 
 interface Props {
@@ -26,7 +27,7 @@ export const columns: ColumnDef<TransactionsHistoryRow>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title='Category' />
         ),
-        filterFn:(row, id, value) => value.includes(row.getValue(id)),
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
         cell: ({ row }) => (
             <div className='flex gap-2 capitalize'>
                 {row.original.categoryIcon}
@@ -66,7 +67,7 @@ export const columns: ColumnDef<TransactionsHistoryRow>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title='Type' className='justify-center' />
         ),
-        filterFn:(row, id, value) => value.includes(row.getValue(id)),
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
         cell: ({ row }) => (
             <div
                 className={cn("capitalize rounded-lg text-center p-2", row.original.type === "income" ? "bg-emerald-400/10 text-emerald-500" : "bg-rose-400/10 text-rose-500")} >
@@ -106,6 +107,7 @@ function TransactionsTable({ from, to }: Props) {
         onColumnFiltersChange: setColumnFilters,
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
     });
 
     const categoriesOptions = useMemo(() => {
@@ -188,6 +190,24 @@ function TransactionsTable({ from, to }: Props) {
                             )}
                         </TableBody>
                     </Table>
+                </div>
+                <div className="flex items-center justify-end space-x-2 py-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        Next
+                    </Button>
                 </div>
             </SkeletonWrapper>
         </div>
