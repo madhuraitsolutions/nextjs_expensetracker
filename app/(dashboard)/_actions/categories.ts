@@ -41,13 +41,26 @@ export async function DeleteCategory(form: DeleteCategorySchemaType) {
         redirect("/sign-in");
     }
 
-    return await prisma.category.delete({
+    const transactions = await prisma.transaction.findMany({
         where: {
-            name_userId_type: {
-                name: parsedBody.data.name,
-                userId: user.id,
-                type: parsedBody.data.type,
-            },
+            category: parsedBody.data.name,
+            userId: user.id,
+            type: parsedBody.data.type,
         },
-    }); 
+    });
+
+    if (transactions.length > 0) {
+        throw new Error("This category has associated transactions and cannot be deleted.");
+    } else {
+        // If there are no transactions, proceed with deleting the category
+        return await prisma.category.delete({
+            where: {
+                name_userId_type: {
+                    name: parsedBody.data.name,
+                    userId: user.id,
+                    type: parsedBody.data.type,
+                },
+            },
+        });
+    }
 }
