@@ -5,7 +5,7 @@ import SkeletonWrapper from '@/components/SkeletonWrapper';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { GetFormatterforCurrency } from '@/lib/helpers';
+import { DateToUTCDate, GetFormatterforCurrency } from '@/lib/helpers';
 import { TransactionType } from '@/lib/types';
 import { UserSettings } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
@@ -21,7 +21,7 @@ function CategoriesStat({ from, to, userSettings }: Props) {
     const statsQuery = useQuery<GetCategoriesStatsResponseType>({
         queryKey: ["overview", "categories", "stats", from, to],
         queryFn: () => fetch(
-            `/api/stats/categories?from=${from}&to=${to}`
+            `/api/stats/categories?from=${DateToUTCDate(from)}&to=${DateToUTCDate(to)}`
         ).then((res) => res.json()),
     });
 
