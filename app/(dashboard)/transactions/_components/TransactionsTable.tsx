@@ -14,6 +14,7 @@ import React, { useMemo, useState } from 'react'
 import { download, generateCsv, mkConfig } from 'export-to-csv'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, TrashIcon } from 'lucide-react';
+import DeleteTransactionDialog from './DeleteTransactionDialog';
 
 interface Props {
     from: Date;
@@ -263,7 +264,8 @@ function RowActions({ transaction }: { transaction: TransactionsHistoryRow }) {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     return (
-        <>            
+        <> 
+            <DeleteTransactionDialog open={showDeleteDialog} setOpen={setShowDeleteDialog} transactionId={transaction.id} />           
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant={"ghost"} className="h-8 w-8 p-0">
