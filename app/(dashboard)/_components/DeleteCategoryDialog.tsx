@@ -28,8 +28,8 @@ function DeleteCategoryDialog({ category, trigger }: Props) {
                 queryKey: ["categories"],
             });
         },
-        onError: () => {
-            toast.error(`Failed to delete category ${category.name}`, {
+        onError: (error) => {
+            toast.error(`Failed to delete category ${category.name} : ${error.message}`, {
                 id: categoryIdentifier,
             });
         },
