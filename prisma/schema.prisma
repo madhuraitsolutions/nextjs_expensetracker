@@ -23,6 +23,20 @@ model UserSettings {
   currency String
 }
 
+model Account {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  name String
+  userId String
+  openingBalance Float
+  currentBalance Float
+  accountNumber String
+  description String
+  date DateTime
+
+  @@unique([name, userId, accountNumber ])
+}
+
 model Category {
   createdAt DateTime @default(now())
   name String
@@ -43,6 +57,8 @@ model Transaction {
   userId String
   type String @default("income")
   
+  account String
+  accountId String
   category String
   categoryIcon String
 }
