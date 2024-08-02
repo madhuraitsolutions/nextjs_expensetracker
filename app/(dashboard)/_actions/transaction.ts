@@ -17,7 +17,20 @@ export async function CreateTransaction(form: CreateTransactionSchemaType) {
         redirect("/sign-in");
     }
 
-    const { amount, date, category, type, description } = parsedBody.data;
+    const { amount, date, category, account, type, description } = parsedBody.data;
+    
+
+    // Checking if the account exists
+    const accountRow = await prisma.account.findFirst({
+        where: {
+            userId: user.id,
+            name: account,
+        },
+    });
+
+    if (!accountRow) {
+        throw new Error("Account not found");
+    }
 
     // Checking if the category exists
     const categoryRow = await prisma.category.findFirst({
@@ -40,8 +53,23 @@ export async function CreateTransaction(form: CreateTransactionSchemaType) {
                 date,
                 description: description || "",
                 type,
+                accountId: accountRow.id,
+                account: accountRow.name,                
                 category: categoryRow.name,
                 categoryIcon: categoryRow.icon,
+            },
+        }),
+
+        prisma.account.update({
+            where: {
+                name_userId_accountNumber: {
+                    name: accountRow.name,
+                    userId: user.id,
+                    accountNumber: accountRow.accountNumber,
+                }
+            },
+            data: {
+                currentBalance: type === "income" ? accountRow.currentBalance + amount : accountRow.currentBalance - amount,
             },
         }),
 
