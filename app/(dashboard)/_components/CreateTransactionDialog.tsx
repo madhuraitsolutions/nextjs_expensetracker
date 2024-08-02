@@ -20,6 +20,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CreateTransaction } from '../_actions/transaction';
 import { toast } from 'sonner';
 import { DateToUTCDate } from '@/lib/helpers';
+import AccountPicker from './AccountPicker';
 
 interface Props {
     trigger: ReactNode;
@@ -35,6 +36,9 @@ function CreateTransactionDialog({ trigger, type }: Props) {
         defaultValues: {
             type,
             date: new Date(),
+            accountId:"",
+            description:"",
+            amount:0
         }
     })
 
@@ -42,6 +46,10 @@ function CreateTransactionDialog({ trigger, type }: Props) {
 
     const handleCategoryChange = useCallback((value: string) => {
         form.setValue("category", value);
+    }, [form]);
+
+    const handleAccountChange = useCallback((value: string) => {
+        form.setValue("account", value);
     }, [form]);
 
     const queryClient = useQueryClient();
@@ -58,6 +66,8 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                 description: "",
                 amount: 0,
                 date: new Date(),
+                account: undefined,
+                accountId:"",
                 category: undefined,
             });
 
@@ -113,7 +123,7 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                                 <FormItem>
                                     <FormLabel>Description</FormLabel>
                                     <FormControl>
-                                        <Input defaultValue={""} {...field} />
+                                        <Input {...field} />
                                     </FormControl>
                                     <FormDescription>
                                         Transaction Description (Optional)
@@ -121,21 +131,38 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="amount"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Amount</FormLabel>
-                                    <FormControl>
-                                        <Input defaultValue={0} type="number" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Transaction Amount (Required)
-                                    </FormDescription>
-                                </FormItem>
-                            )}
-                        />
+                        <div className='flex items-center justify-between gap-2'>
+                            <FormField
+                                control={form.control}
+                                name="amount"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Amount</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" {...field} />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Transaction Amount (Required)
+                                        </FormDescription>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="account"
+                                render={({ field }) => (
+                                    <FormItem className='flex flex-col'>
+                                        <FormLabel>Account</FormLabel>
+                                        <FormControl>
+                                            <AccountPicker onChange={handleAccountChange} />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Select an account (Required)
+                                        </FormDescription>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <div className='flex items-center justify-between gap-2'>
                             <FormField
                                 control={form.control}
@@ -157,7 +184,7 @@ function CreateTransactionDialog({ trigger, type }: Props) {
                                 name="date"
                                 render={({ field }) => (
                                     <FormItem className='flex flex-col'>
-                                        <FormLabel>Treansaction Date</FormLabel>
+                                        <FormLabel>Transaction Date</FormLabel>
                                         <FormControl>
                                             <Popover>
                                                 <PopoverTrigger asChild>
