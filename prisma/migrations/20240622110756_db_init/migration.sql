@@ -7,6 +7,21 @@ CREATE TABLE "UserSettings" (
 );
 
 -- CreateTable
+CREATE TABLE "Account" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "name" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "openingBalance" DOUBLE PRECISION NOT NULL,
+    "currentBalance" DOUBLE PRECISION NOT NULL,
+    "accountNumber" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Category" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "name" TEXT NOT NULL,
@@ -25,6 +40,8 @@ CREATE TABLE "Transaction" (
     "date" TIMESTAMP(3) NOT NULL,
     "userId" TEXT NOT NULL,
     "type" TEXT NOT NULL DEFAULT 'income',
+    "account" TEXT NOT NULL,
+    "accountId" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "categoryIcon" TEXT NOT NULL,
 
@@ -53,6 +70,9 @@ CREATE TABLE "YearHistory" (
 
     CONSTRAINT "YearHistory_pkey" PRIMARY KEY ("month","year","userId")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Account_name_userId_accountNumber_key" ON "Account"("name", "userId", "accountNumber");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Category_name_userId_type_key" ON "Category"("name", "userId", "type");
