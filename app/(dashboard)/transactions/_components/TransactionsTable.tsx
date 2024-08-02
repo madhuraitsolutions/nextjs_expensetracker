@@ -27,6 +27,18 @@ type TransactionsHistoryRow = GetTransactionsHistoryResponseType[0];
 
 const columns: ColumnDef<TransactionsHistoryRow>[] = [
     {
+        accessorKey: "account",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title='Account' />
+        ),
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
+        cell: ({ row }) => (
+            <div className='flex gap-2 capitalize'>
+                <div className='capitalize'>{row.original.account}</div>
+            </div>
+        ),
+    },
+    {
         accessorKey: "category",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title='Category' />
@@ -38,7 +50,7 @@ const columns: ColumnDef<TransactionsHistoryRow>[] = [
                 <div className='capitalize'>{row.original.category}</div>
             </div>
         ),
-    },
+    },    
     {
         accessorKey: "description",
         header: ({ column }) => (
@@ -91,7 +103,7 @@ const columns: ColumnDef<TransactionsHistoryRow>[] = [
     {
         id: "actions",
         enableHiding: false,
-        header:"Action",
+        header: "Action",
         cell: ({ row }) => (
             <RowActions transaction={row.original} />
         ),
@@ -145,10 +157,29 @@ function TransactionsTable({ from, to }: Props) {
         return Array.from(uniqueCategories);
     }, [history.data]);
 
+    const accountsOptions = useMemo(() => {
+        const accountsMap = new Map();
+        history.data?.forEach((transaction) => {
+            accountsMap.set(transaction.account, {
+                value: transaction.account,
+                label: transaction.account,
+            });
+        });
+        const uniqueAccounts = new Set(accountsMap.values());
+        return Array.from(uniqueAccounts);
+    }, [history.data]);
+
     return (
         <div className='w-full'>
             <div className='flex flex-wrap items-end justify-between gap-2 py-4'>
                 <div className="flex gap-2">
+                    {table.getColumn("account") && (
+                        <DataTableFacetedFilter
+                            title="Account"
+                            column={table.getColumn("account")}
+                            options={accountsOptions}
+                        />
+                    )}
                     {table.getColumn("category") && (
                         <DataTableFacetedFilter
                             title="Category"
@@ -264,8 +295,8 @@ function RowActions({ transaction }: { transaction: TransactionsHistoryRow }) {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     return (
-        <> 
-            <DeleteTransactionDialog open={showDeleteDialog} setOpen={setShowDeleteDialog} transactionId={transaction.id} />           
+        <>
+            <DeleteTransactionDialog open={showDeleteDialog} setOpen={setShowDeleteDialog} transactionId={transaction.id} />
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant={"ghost"} className="h-8 w-8 p-0">
