@@ -7,12 +7,15 @@ import { TransactionType } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
 import { PlusSquare, TrashIcon, TrendingDown, TrendingUp } from 'lucide-react';
 import React from 'react'
-import CreateCategoryDialog from '../_components/CreateCategoryDialog';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Category } from '@prisma/client';
+import { Account } from '@prisma/client';
+import CreateCategoryDialog from '../_components/CreateCategoryDialog';
 import DeleteCategoryDialog from '../_components/DeleteCategoryDialog';
+import CreateAccountDialog from '../_components/CreateAccountDialog';
+import DeleteAccountDialog from '../_components/DeleteAccountDialog';
 
 function page() {
     return (
@@ -37,8 +40,9 @@ function page() {
                         <CurrencyComboBox />
                     </CardContent>
                 </Card>
+                <AccountList />
                 <CategoryList type="income" />
-                <CategoryList type="expense" />
+                <CategoryList type="expense" />                
             </div>
         </>
     )
@@ -127,6 +131,92 @@ function CategoryListItem({ category }: { category: Category }) {
             </div>
             <DeleteCategoryDialog
                 category={category}
+                trigger={
+                    <Button
+                        className='flex w-full border-separate items-center gap-2 rounded-t-none text-muted-foreground hover:bg-red-500/20'
+                        variant={"secondary"}
+                    >
+                        <TrashIcon className='h-4 w-4' />
+                        Remove
+                    </Button>
+                }
+            />
+        </div>
+    )
+}
+
+function AccountList() {
+    const accountsQuery = useQuery({
+        queryKey: ['accounts'],
+        queryFn: () => fetch(`/api/accounts`).then((res) => res.json()),
+    });
+
+    const dataAvailable = accountsQuery.data && accountsQuery.data.length > 0;
+
+    return (
+        <SkeletonWrapper isLoading={accountsQuery.isLoading}>
+            <Card>
+                <CardHeader>
+                    <CardTitle className='flex items-center justify-between gap-2'>
+                        <div className='flex items-center gap-2'>
+                            <div>
+                                Accounts
+                                <div className='text-sm text-muted-foreground'>Sorted by name</div>
+                            </div>
+                        </div>
+                        <CreateAccountDialog
+                            successCallback={() => accountsQuery.refetch()}
+                            trigger={
+                                <Button className='gap-2 text-sm'>
+                                    <PlusSquare className='h-4 w-4' />
+                                    Create Account
+                                </Button>
+                            }
+                        />
+                    </CardTitle>
+                </CardHeader>
+                <Separator />
+                {!dataAvailable ? (
+                    <div className="flex h-40 w-full flex-col items-center justify-center">
+                        <p>
+                            No Accounts yet
+                        </p>
+                        <p className='text-sm text-muted-foreground'>
+                            Create one to get started
+                        </p>
+                    </div>
+                ) : (
+                    <div className='grid grid-flow-row gap-2 p-2 sm:grid-flow-row sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+                        {accountsQuery.data.map((account: Account) => (
+                            <AccountListItem
+                                key={account.name}
+                                account={account}
+                            />
+                        ))}
+                    </div>
+                )}
+
+            </Card>
+        </SkeletonWrapper>
+    )
+}
+
+function AccountListItem({ account }: { account: Account }) {
+    return (
+        <div className="flex border-seperate flex-col justify-between rounded-md border shadow-md shadow-black/[0.1] dark:shadow-white/[0.1]">
+            <div className='flex flex-col items-center gap-2 p-4'>
+                <span className="text-3xl" role="img">
+                    {account.name}
+                </span>
+                <span>
+                    {account.accountNumber}
+                </span>
+                <span>
+                    ₹ {account.currentBalance}
+                </span>
+            </div>
+            <DeleteAccountDialog
+                account={account}
                 trigger={
                     <Button
                         className='flex w-full border-separate items-center gap-2 rounded-t-none text-muted-foreground hover:bg-red-500/20'
