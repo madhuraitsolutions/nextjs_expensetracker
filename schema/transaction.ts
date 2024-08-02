@@ -7,6 +7,8 @@ export const CreateTransactionSchema = z.object({
     description: z.string().optional(),
     date: z.coerce.date(),
     category: z.string(),
+    account: z.string(),
+    accountId: z.string(),
     type: z.union([z.literal("income"), z.literal("expense")]),
 });
 
