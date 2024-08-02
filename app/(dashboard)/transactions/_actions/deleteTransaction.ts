@@ -23,6 +23,18 @@ export async function DeleteTransaction(transactionId: string) {
         throw new Error("Transaction not found");
     }
 
+    // Checking if the account exists
+    const accountRow = await prisma.account.findFirst({
+        where: {
+            userId: user.id,
+            name: transaction.account,
+        },
+    });
+
+    if (!accountRow) {
+        throw new Error("Account not found");
+    }
+
     await prisma.$transaction([
         //Delete transaction from db
         prisma.transaction.delete({
@@ -95,6 +107,19 @@ export async function DeleteTransaction(transactionId: string) {
                 year: transaction.date.getUTCFullYear(),
                 income: 0,
                 expense: 0,
+            },
+        }),
+
+        prisma.account.update({
+            where: {
+                name_userId_accountNumber: {
+                    name: transaction.account,
+                    userId: user.id,
+                    accountNumber: accountRow.accountNumber,
+                }
+            },
+            data: {
+                currentBalance: transaction.type === "income" ? accountRow.currentBalance - transaction.amount : accountRow.currentBalance + transaction.amount,
             },
         }),
     ]);
