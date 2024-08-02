@@ -27,7 +27,7 @@ export async function CreateAccount(form: CreateAccountSchemaType) {
             accountNumber,
             date,
             currentBalance: openingBalance, 
-            description
+            description: description || "" 
         },
     });
 }
